@@ -4,7 +4,7 @@ def create_newspapers_table(cursor):
             id CHAR(36) PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             link VARCHAR(255),
-            country_id CHAR(2), -- Foreign key to countries table
+            country_id CHAR(2) NOT NULL, -- Foreign key to countries table
             monthly_readers INT,
             political_inclination VARCHAR(255),
             basic_info TEXT,
@@ -60,10 +60,10 @@ def create_articles_table(cursor):
             title VARCHAR(512) NOT NULL,
             body TEXT,
             link TEXT NOT NULL,
-            pubDate DATETIME,
-            gradeType_id CHAR(36),
-            newspaper_id CHAR(36),
-            country_id CHAR(2),
+            pubDate DATETIME NOT NULL,
+            gradeType_id CHAR(36) NOT NULL,
+            newspaper_id CHAR(36) NOT NULL,
+            country_id CHAR(2) NOT NULL,
             moderator VARCHAR(255),
             gradeDate DATE,
             image_link TEXT,
@@ -79,8 +79,8 @@ def create_articles_table(cursor):
 def create_article_tags_table(cursor):
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS articleTags (
-            article_id CHAR(36),
-            tag_id CHAR(36),
+            article_id CHAR(36) NOT NULL,
+            tag_id CHAR(36) NOT NULL,
             PRIMARY KEY (article_id, tag_id),
             FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
             FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE

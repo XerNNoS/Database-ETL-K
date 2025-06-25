@@ -38,10 +38,10 @@ class ArticleClean(BaseModel):
     title: str
     body: Optional[str]
     link: str
-    pubDate: Optional[datetime]
-    gradeType_id: Optional[str]
-    newspaper_id: Optional[str]
-    country_id: Optional[str]
+    pubDate: datetime
+    gradeType_id: str
+    newspaper_id: str
+    country_id: str
     moderator: Optional[str]
     gradeDate: Optional[date]
     image_link: Optional[str]
