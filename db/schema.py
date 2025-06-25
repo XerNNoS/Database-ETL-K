@@ -10,7 +10,7 @@ def create_newspapers_table(cursor):
             basic_info TEXT,
             logo TEXT,
             owner VARCHAR(255),
-            FOREIGN KEY (country_id) REFERENCES countries(country_id) ON DELETE CASCADE
+            FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE
         )
     """)
 
@@ -71,8 +71,8 @@ def create_articles_table(cursor):
             translated_article TEXT,
             translated_title VARCHAR(255),
             FOREIGN KEY (gradeType_id) REFERENCES gradeTypes(id),
-            FOREIGN KEY (newspaper_id) REFERENCES newspapers(newspaper_id),
-            FOREIGN KEY (country_id) REFERENCES countries(country_id)
+            FOREIGN KEY (newspaper_id) REFERENCES newspapers(id),
+            FOREIGN KEY (country_id) REFERENCES countries(id)
         )
     """)
 

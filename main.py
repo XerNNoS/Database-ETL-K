@@ -64,8 +64,8 @@ if __name__ == '__main__':
     # 📰 Étape 5 - ETL newspapers
     # Load country map
     target_cursor_dict = target_conn.cursor(dictionary=True)
-    target_cursor_dict.execute("SELECT country, country_id FROM countries")
-    country_map = {row["country"]: row["country_id"] for row in target_cursor_dict.fetchall()}
+    target_cursor_dict.execute("SELECT name, id FROM countries")
+    country_map = {row["name"]: row["id"] for row in target_cursor_dict.fetchall()}
     target_cursor_dict.close()
 
     for batch in read_table_in_batches(source_cursor, "newspapers", BATCH_SIZE):
@@ -86,11 +86,11 @@ if __name__ == '__main__':
     target_cursor_dict.execute("SELECT type, id FROM gradeTypes")
     grade_type_table = {row["type"]: row["id"] for row in target_cursor_dict.fetchall()}
 
-    target_cursor_dict.execute("SELECT country, country_id FROM countries")
-    country_map = {row["country"]: row["country_id"] for row in target_cursor_dict.fetchall()}
+    target_cursor_dict.execute("SELECT name, id FROM countries")
+    country_map = {row["name"]: row["id"] for row in target_cursor_dict.fetchall()}
 
-    target_cursor_dict.execute("SELECT newspaper_name, newspaper_id FROM newspapers")
-    newspaper_map = {row["newspaper_name"]: row["newspaper_id"] for row in target_cursor_dict.fetchall()}
+    target_cursor_dict.execute("SELECT name, id FROM newspapers")
+    newspaper_map = {row["name"]: row["id"] for row in target_cursor_dict.fetchall()}
 
     target_cursor_dict.close()
 

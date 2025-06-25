@@ -10,12 +10,12 @@ def insert_newspapers(cursor, records):
     for rec in records:
         cursor.execute("""
             INSERT INTO newspapers (
-                newspaper_id, newspaper_name, link, country_id, monthly_readers,
+                id, name, link, country_id, monthly_readers,
                 political_inclination, basic_info, logo, owner
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            rec["newspaper_id"],
-            rec["newspaper_name"],
+            rec["id"],
+            rec["name"],
             rec["link"],
             rec["country_id"],
             rec["monthly_readers"],
@@ -29,14 +29,14 @@ def insert_countries(cursor, records):
     for rec in records:
         cursor.execute("""
             INSERT INTO countries (
-                country_id, country, flag_logo, unsc, qsd, five_eyes,
+                id, name, flag_logo, unsc, qsd, five_eyes,
                 eco_rank, diasporic_rank, border_dispute, brics,
                 import_rank, export_rank, defense_rank, tourism_rank, nuclear
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                       %s, %s, %s, %s, %s)
         """, (
-            rec["country_id"],
-            rec["country"],
+            rec["id"],
+            rec["name"],
             rec.get("flag_logo"),
             rec.get("unsc"),
             rec.get("qsd"),

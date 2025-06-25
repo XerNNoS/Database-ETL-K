@@ -69,7 +69,7 @@ def get_or_create_other_newspaper(country_name, country_id, newspaper_map, curso
 
     newspaper_id = str(uuid.uuid4())
     cursor.execute(
-        "INSERT INTO newspapers (newspaper_id, newspaper_name, link, country_id) VALUES (%s, %s, %s, %s)",
+        "INSERT INTO newspapers (id, name, link, country_id) VALUES (%s, %s, %s, %s)",
         (newspaper_id, key, None, country_id)
     )
     newspaper_map[key] = newspaper_id

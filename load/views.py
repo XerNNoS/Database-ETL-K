@@ -18,8 +18,8 @@ def create_views(cursor):
         a.gradeDate
     FROM articles a
     LEFT JOIN gradeTypes gt ON a.gradeType_id = gt.id
-    LEFT JOIN newspapers np ON a.newspaper_id = np.newspaper_id
-    LEFT JOIN countries c ON a.country_id = c.country_id;
+    LEFT JOIN newspapers np ON a.newspaper_id = np.id
+    LEFT JOIN countries c ON a.country_id = c.id;
     """)
 
     # Vue 2 — Nombre d'articles par grade global
@@ -177,5 +177,5 @@ def create_views(cursor):
         a.gradeDate
         FROM articles a
         LEFT JOIN gradeTypes gt ON a.gradeType_id = gt.id
-        LEFT JOIN newspapers np ON a.newspaper_id = np.newspaper_id
+        LEFT JOIN newspapers np ON a.newspaper_id = np.id
     """)

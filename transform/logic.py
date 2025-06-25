@@ -27,11 +27,11 @@ def transform_newspaper_record(record: dict, country_map: dict) -> dict:
     record["country_id"] = country_id
     record.pop("country", None)
 
-    record["id"] = str(uuid.uuid4())
+    record["id"] = record.get("newspaper_id")
     record.pop("newspaper_id", None)
 
-    record["name"] = record.get("newspaperName")
-    record.pop("newspaperName", None)
+    record["name"] = record.get("newspaper_name")
+    record.pop("newspaper_name", None)
     return record
     
 
@@ -152,7 +152,7 @@ def transform_article_record(
             gradeType_id=grade_type_id,
             newspaper_id=newspaper_id,
             country_id=country_id,
-            moderator=record.get("moderator"),
+            moderator=moderator,
             gradeDate=grade_date,
             image_link=image_link,
             original_language=original_language,
