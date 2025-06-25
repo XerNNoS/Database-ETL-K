@@ -11,6 +11,7 @@ from utils.helpers import (
 from typing import Optional
 from mysql.connector.cursor import MySQLCursor
 from utils.iso import get_country_code
+from datetime import datetime
 
 
 def transform_newspaper_record(record: dict, country_map: dict) -> dict:
@@ -125,7 +126,18 @@ def transform_article_record(
         # 🏷️ Tags
         raw_tags = record.get("tags", "")
         tags = extract_tags_from_string(raw_tags) if tag_list_enabled else []
-        title = record["title"][:500] + "..." if len(record["title"]) > 512 else record["title"]
+        
+
+        # 🛑 Règle spéciale : gradeDate future
+        moderator = record.get("moderator")
+        if grade_date and isinstance(grade_date, datetime) and grade_date.date() > datetime(2024, 6, 30).date():
+            grade_type_id = grade_type_table.get("Ungraded")
+            moderator = None
+            tags = []
+            grade_date = None
+        # 📝 Titre
+        raw_title = record.get("title", "")
+        title = raw_title[:500] + "..." if len(raw_title) > 512 else raw_title
         article = ArticleClean(
             id=str(uuid.uuid4()),
             title=title,
