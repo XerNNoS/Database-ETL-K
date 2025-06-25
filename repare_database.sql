@@ -111,19 +111,19 @@ INSERT INTO newspapers (
 -- okaz.com.sa
 ('sa-news-0003-0000-0000-000000000003', 'okaz.com.sa', 'https://www.okaz.com.sa/', 'Saudi Arabia', NULL, NULL, NULL, NULL, NULL, NULL);
 
-UPDATE countries
+UPDATE countryCounts
 SET
     brics = "No",
     ecoRank = 3
 WHERE countryName = 'Germany';
 
-UPDATE countries
+UPDATE countryCounts
 SET
     brics = "No",
     ecoRank = 4
 WHERE countryName = 'Japan';
 
-UPDATE countries
+UPDATE countryCounts
 SET
     brics = "Yes"
 WHERE countryName = 'Canada';
