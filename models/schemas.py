@@ -4,8 +4,8 @@ from datetime import date, datetime
 
 
 class Newspaper(BaseModel):
-    newspaper_id: str
-    newspaper_name: str
+    id: str
+    name: str
     link: Optional[str] = None
     country_id: str
     monthly_readers: Optional[int] = None
@@ -17,8 +17,8 @@ class Newspaper(BaseModel):
 
 
 class CountryClean(BaseModel):
-    country_id: str
-    country: str
+    id: str
+    name: str
     flag_logo: Optional[str]
     unsc: Optional[bool]
     qsd: Optional[bool]

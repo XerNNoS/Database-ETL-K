@@ -8,8 +8,8 @@ def create_views(cursor):
         a.link,
         a.pubDate,
         gt.type AS grade_type,
-        np.newspaper_name,
-        c.country,
+        np.name AS newspaper_name,
+        c.id AS country_id,
         a.original_language,
         a.translated_title,
         a.translated_article,
@@ -37,11 +37,11 @@ def create_views(cursor):
     cursor.execute("""
     CREATE OR REPLACE VIEW article_counts_by_country AS
     SELECT
-        c.country,
+        c.name AS country,
         COUNT(*) AS article_count
     FROM articles a
-    JOIN countries c ON a.country_id = c.country_id
-    GROUP BY c.country
+    JOIN countries c ON a.country_id = c.id
+    GROUP BY c.name
     ORDER BY article_count DESC;
     """)
 
@@ -49,13 +49,13 @@ def create_views(cursor):
     cursor.execute("""
     CREATE OR REPLACE VIEW article_counts_by_newspaper AS
     SELECT
-        np.newspaper_name,
-        c.country,
+        np.name AS newspaper_name,
+        c.name AS country,
         COUNT(*) AS article_count
     FROM articles a
-    JOIN newspapers np ON a.newspaper_id = np.newspaper_id
-    LEFT JOIN countries c ON np.country_id = c.country_id
-    GROUP BY np.newspaper_name, c.country
+    JOIN newspapers np ON a.newspaper_id = np.id
+    LEFT JOIN countries c ON np.country_id = c.id
+    GROUP BY newspaper_name, country
     ORDER BY article_count DESC;
     """)
 
@@ -114,7 +114,7 @@ def create_views(cursor):
         CAST(DATE_FORMAT(a.pubDate, '%Y-%m') AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period,
 
         -- Newspaper info
-        n.newspaper_id,
+        n.id AS newspaper_id,
 
         -- Count of article by grade type (Neutral, Positive, Negative)
         SUM(CASE WHEN gt.type = 'Neutral' THEN 1 ELSE 0 END) AS Neutral,
@@ -126,12 +126,12 @@ def create_views(cursor):
 
     FROM articles a
     JOIN gradeTypes gt ON a.gradeType_id = gt.id
-    JOIN newspapers n ON a.newspaper_id = n.newspaper_id
+    JOIN newspapers n ON a.newspaper_id = n.id
     
     WHERE a.pubDate IS NOT NULL
     AND gt.type IN ('Neutral', 'Positive', 'Negative')
 
-    GROUP BY year_month_period, n.newspaper_id
+    GROUP BY year_month_period, n.id
 
     UNION ALL
 
@@ -140,7 +140,7 @@ def create_views(cursor):
         CAST('ALL_TIME' AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period
  ,
 
-        n.newspaper_id,
+        n.id AS newspaper_id,
 
         SUM(CASE WHEN gt.type = 'Neutral' THEN 1 ELSE 0 END) AS Neutral,
         SUM(CASE WHEN gt.type = 'Positive' THEN 1 ELSE 0 END) AS Positive,
@@ -150,12 +150,12 @@ def create_views(cursor):
 
     FROM articles a
     JOIN gradeTypes gt ON a.gradeType_id = gt.id
-    JOIN newspapers n ON a.newspaper_id = n.newspaper_id
+    JOIN newspapers n ON a.newspaper_id = n.id
 
     WHERE a.pubDate IS NOT NULL
     AND gt.type IN ('Neutral', 'Positive', 'Negative')
 
-    GROUP BY n.newspaper_id
+    GROUP BY n.id
     """)
 
 
@@ -167,7 +167,7 @@ def create_views(cursor):
         a.link,
         a.pubDate,
         gt.type AS grade_type,
-        np.newspaper_name,
+        np.name AS newspaper_name,
         a.country_id,
         a.original_language,
         a.translated_title,

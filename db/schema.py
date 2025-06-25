@@ -1,8 +1,8 @@
 def create_newspapers_table(cursor):
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS newspapers (
-            newspaper_id CHAR(36) PRIMARY KEY,
-            newspaper_name VARCHAR(255) NOT NULL,
+            id CHAR(36) PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
             link VARCHAR(255),
             country_id CHAR(2), -- Foreign key to countries table
             monthly_readers INT,
@@ -19,8 +19,8 @@ def create_newspapers_table(cursor):
 def create_countries_table(cursor):
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS countries (
-            country_id CHAR(2) PRIMARY KEY,
-            country VARCHAR(255) NOT NULL,
+            id CHAR(2) PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
             flag_logo VARCHAR(255),
             unsc BOOLEAN,
             qsd BOOLEAN,

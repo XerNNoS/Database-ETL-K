@@ -27,6 +27,11 @@ def transform_newspaper_record(record: dict, country_map: dict) -> dict:
     record["country_id"] = country_id
     record.pop("country", None)
 
+    record["id"] = str(uuid.uuid4())
+    record.pop("newspaper_id", None)
+
+    record["name"] = record.get("newspaperName")
+    record.pop("newspaperName", None)
     return record
     
 
@@ -41,8 +46,8 @@ def transform_country_records(rows: list[dict]) -> list[dict]:
     for country, data in seen.items():
         try:
             clean = CountryClean(
-                country_id=get_country_code(country),
-                country=country,
+                id=get_country_code(country),
+                name=country,
                 flag_logo=data.get("flagLogo"),
                 unsc=parse_yes_no(data.get("unsc")),
                 qsd=parse_yes_no(data.get("qsd")),
