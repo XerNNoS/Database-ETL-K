@@ -107,7 +107,7 @@ def transform_article_record(
         # 🌍 Pays (correction de la logique)
         if newspaper_id:
             # Si journal trouvé, on récupère le pays depuis la DB
-            db_cursor.execute("SELECT country_id FROM newspapers WHERE newspaper_id = %s", (newspaper_id,))
+            db_cursor.execute("SELECT country_id FROM newspapers WHERE id = %s", (newspaper_id,))
             result = db_cursor.fetchone()
             country_id = result["country_id"] if result else None
         else:
