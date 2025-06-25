@@ -1,5 +1,7 @@
+from tqdm import tqdm
+
 def insert_users(cursor, users):
-    for user in users:
+    for user in tqdm(users, desc="Inserting users", unit="user"):
         cursor.execute(
             "INSERT INTO users (username, email, age) VALUES (%s, %s, %s)",
             (user["username"], user["email"], user["age"])
@@ -7,7 +9,7 @@ def insert_users(cursor, users):
 
 
 def insert_newspapers(cursor, records):
-    for rec in records:
+    for rec in tqdm(records, desc="Inserting newspapers", unit="newspaper"):
         cursor.execute("""
             INSERT INTO newspapers (
                 id, name, link, country_id, monthly_readers,
@@ -26,7 +28,7 @@ def insert_newspapers(cursor, records):
         ))
 
 def insert_countries(cursor, records):
-    for rec in records:
+    for rec in tqdm(records, desc="Inserting countries", unit="country"):
         cursor.execute("""
             INSERT INTO countries (
                 id, name, flag_logo, unsc, qsd, five_eyes,
@@ -56,7 +58,7 @@ import uuid
 
 def insert_grade_types(cursor):
     types = ["Positive", "Negative", "Neutral", "Irrelevant", "Ungraded"]
-    for t in types:
+    for t in tqdm(types, desc="Inserting grade types", unit="grade type"):
         cursor.execute("""
             INSERT INTO gradeTypes (id, type) VALUES (%s, %s)
             ON DUPLICATE KEY UPDATE type = VALUES(type)
@@ -74,7 +76,7 @@ def insert_tags(cursor):
         "Science",
         "TechScience"
     ]
-    for name in tags:
+    for name in tqdm(tags, desc="Inserting tags", unit="tag"):
         cursor.execute("""
             INSERT INTO tags (id, name) VALUES (%s, %s)
             ON DUPLICATE KEY UPDATE name = VALUES(name)
@@ -82,7 +84,7 @@ def insert_tags(cursor):
 
 
 def insert_articles(cursor, articles):
-    for a in articles:
+    for a in tqdm(articles, desc="Inserting articles", unit="article"):
         cursor.execute("""
             INSERT INTO articles (
                 id, title, body, link, pubDate, gradeType_id,
@@ -98,7 +100,7 @@ def insert_articles(cursor, articles):
         ))
 
 def insert_article_tags(cursor, articles: list[dict], tag_map: dict):
-    for article in articles:
+    for article in tqdm(articles, desc="Inserting article tags", unit="article"):
         article_id = article["id"]
         for tag_name in article.get("tags", []):
             tag_id = tag_map.get(tag_name)
