@@ -68,14 +68,7 @@ def transform_country_records(rows: list[dict]) -> list[dict]:
     return result
 
 
-# Correspondance gradeType brute → canonique
-GRADE_TYPE_MAP = {
-    "positive": "Positive",
-    "negative": "Negative",
-    "neutral": "Neutral",
-    "irrelevant": "Irrelevant",
-    "ungraded": "Ungraded"
-}
+
 
 def transform_article_record(
     record: dict,
@@ -95,8 +88,7 @@ def transform_article_record(
         grade_date = record.get("gradeDate")
 
         # 🏷️ Type de note
-        raw_type = (record.get("type") or "").strip().lower()
-        grade_type_name = GRADE_TYPE_MAP.get(raw_type, "Ungraded")
+        grade_type_name = (record.get("type") or "ungraded").strip().lower()
         grade_type_id = grade_type_table.get(grade_type_name)
 
         # 🗞️ Journal

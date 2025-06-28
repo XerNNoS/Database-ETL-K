@@ -116,20 +116,20 @@ def create_views(cursor):
         -- Newspaper info
         n.id AS newspaper_id,
 
-        -- Count of article by grade type (Neutral, Positive, Negative)
-        SUM(CASE WHEN gt.type = 'Neutral' THEN 1 ELSE 0 END) AS Neutral,
-        SUM(CASE WHEN gt.type = 'Positive' THEN 1 ELSE 0 END) AS Positive,
-        SUM(CASE WHEN gt.type = 'Negative' THEN 1 ELSE 0 END) AS Negative,
+        -- Count of article by grade type (neutral, positive, negative)
+        SUM(CASE WHEN gt.type = 'neutral' THEN 1 ELSE 0 END) AS neutral,
+        SUM(CASE WHEN gt.type = 'positive' THEN 1 ELSE 0 END) AS positive,
+        SUM(CASE WHEN gt.type = 'negative' THEN 1 ELSE 0 END) AS negative,
 
         -- Sum of the three
-        SUM(CASE WHEN gt.type IN ('Neutral', 'Positive', 'Negative') THEN 1 ELSE 0 END) AS `ALL`
+        SUM(CASE WHEN gt.type IN ('neutral', 'positive', 'negative') THEN 1 ELSE 0 END) AS `ALL`
 
     FROM articles a
     JOIN gradeTypes gt ON a.gradeType_id = gt.id
     JOIN newspapers n ON a.newspaper_id = n.id
     
     WHERE a.pubDate IS NOT NULL
-    AND gt.type IN ('Neutral', 'Positive', 'Negative')
+    AND gt.type IN ('neutral', 'positive', 'negative')
 
     GROUP BY year_month_period, n.id
 
@@ -137,23 +137,23 @@ def create_views(cursor):
 
     -- ALL_TIME summary (no date restriction)
     SELECT
-        CAST('ALL_TIME' AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period
+        CAST('all_time' AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period
  ,
 
         n.id AS newspaper_id,
 
-        SUM(CASE WHEN gt.type = 'Neutral' THEN 1 ELSE 0 END) AS Neutral,
-        SUM(CASE WHEN gt.type = 'Positive' THEN 1 ELSE 0 END) AS Positive,
-        SUM(CASE WHEN gt.type = 'Negative' THEN 1 ELSE 0 END) AS Negative,
+        SUM(CASE WHEN gt.type = 'neutral' THEN 1 ELSE 0 END) AS neutral,
+        SUM(CASE WHEN gt.type = 'positive' THEN 1 ELSE 0 END) AS positive,
+        SUM(CASE WHEN gt.type = 'negative' THEN 1 ELSE 0 END) AS negative,
 
-        SUM(CASE WHEN gt.type IN ('Neutral', 'Positive', 'Negative') THEN 1 ELSE 0 END) AS `ALL`
+        SUM(CASE WHEN gt.type IN ('neutral', 'positive', 'negative') THEN 1 ELSE 0 END) AS `ALL`
 
     FROM articles a
     JOIN gradeTypes gt ON a.gradeType_id = gt.id
     JOIN newspapers n ON a.newspaper_id = n.id
 
     WHERE a.pubDate IS NOT NULL
-    AND gt.type IN ('Neutral', 'Positive', 'Negative')
+    AND gt.type IN ('neutral', 'positive', 'negative')
 
     GROUP BY n.id
     """)
