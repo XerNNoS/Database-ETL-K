@@ -15,6 +15,7 @@ from datetime import datetime
 
 
 def transform_newspaper_record(record: dict, country_map: dict) -> dict:
+    # Remove embedded articles from the record if present
     record.pop("articles", None)
 
     country_name = record.get("country")
@@ -64,10 +65,8 @@ def transform_country_records(rows: list[dict]) -> list[dict]:
             )
             result.append(clean.model_dump())
         except Exception as e:
-            print(f"[country] Erreur transformation: {e}")
+            print(f"[country] Transformation error: {e}")
     return result
-
-
 
 
 def transform_article_record(
@@ -79,62 +78,63 @@ def transform_article_record(
     db_cursor,
 ) -> Optional[dict]:
     try:
-        # 💬 Corps de l'article
+        # Article body
         body = record.get("contentSnippet") or None
         original_language = detect_language(body) if body else None
 
-        # 🕒 Dates
+        # Dates
         pub_date = record.get("pubDate")
         grade_date = record.get("gradeDate")
 
-        # 🏷️ Type de note
+        # Grade type
         grade_type_name = (record.get("type") or "ungraded").strip().lower()
         grade_type_id = grade_type_table.get(grade_type_name)
 
-        # 🗞️ Journal
+        # Newspaper
         link = record.get("link", "")
         hostname = extract_hostname(link)
         newspaper_id = newspaper_map.get(hostname)
 
-        # 🌍 Pays (correction de la logique)
+        # Country logic fallback
         if newspaper_id:
-            # Si journal trouvé, on récupère le pays depuis la DB
+            # Retrieve country from DB if newspaper is found
             db_cursor.execute("SELECT country_id FROM newspapers WHERE id = %s", (newspaper_id,))
             result = db_cursor.fetchone()
             country_id = result["country_id"] if result else None
         else:
-            # Sinon, on essaie de mapper à partir du nom de pays brut
+            # Attempt to map country from raw name
             country_name = (record.get("country") or "").strip()
             country_id = country_map.get(country_name)
 
             if not newspaper_id:
                 if not country_id:
-                    print(f"[article] Pas de country_id → pas de fallback possible pour link={link}")
+                    print(f"[article] No country_id available, fallback not possible for link={link}")
                     return None
-                # 🆕 Création de 'other_[country]'
+                # Create 'other_[country]' newspaper entry
                 newspaper_id = get_or_create_other_newspaper(
                     country_name, country_id, newspaper_map, db_cursor
                 )
 
-        # 🖼️ Image
+        # Image extraction
         content_html = record.get("content") or ""
         image_link = extract_first_image_src(content_html)
 
-        # 🏷️ Tags
+        # Tags
         raw_tags = record.get("tags", "")
         tags = extract_tags_from_string(raw_tags) if tag_list_enabled else []
-        
 
-        # 🛑 Règle spéciale : gradeDate future
+        # Future gradeDate handling
         moderator = record.get("moderator")
         if grade_date and isinstance(grade_date, datetime) and grade_date.date() > datetime(2024, 6, 30).date():
             grade_type_id = grade_type_table.get("Ungraded")
             moderator = None
             tags = []
             grade_date = None
-        # 📝 Titre
+
+        # Title truncation
         raw_title = record.get("title", "")
         title = raw_title[:500] + "..." if len(raw_title) > 512 else raw_title
+
         article = ArticleClean(
             id=str(uuid.uuid4()),
             title=title,
@@ -156,5 +156,5 @@ def transform_article_record(
         return article.model_dump()
 
     except Exception as e:
-        print(f"[article] Erreur transformation : {e}")
+        print(f"[article] Transformation error: {e}")
         return None

@@ -48,7 +48,7 @@ class ArticleClean(BaseModel):
     original_language: Optional[str]
     translated_article: Optional[str]
     translated_title: Optional[str]
-    tags: List[str]  # noms des tags, à relier ensuite
+    tags: List[str]
 
 
 class GradeType(BaseModel):

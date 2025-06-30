@@ -28,7 +28,6 @@ country_aliases = {
 
 
 def get_country_code(name: str) -> str:
-    # d'abord alias manuel
     if name in country_aliases:
         return country_aliases[name]
     return None

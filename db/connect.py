@@ -8,23 +8,23 @@ def get_source_connection():
 
 
 def create_database_if_not_exists():
-    """Créer la base cible si elle n'existe pas."""
+    """Drop and recreate the target database."""
     temp_config = TARGET_DB_CONFIG.copy()
     db_name = temp_config.pop("database")
 
-    conn = mysql.connector.connect(**temp_config, )
+    conn = mysql.connector.connect(**temp_config)
     cursor = conn.cursor()
     try:
-        cursor.execute(f"drop database if exists kutniti_clean")
+        cursor.execute("DROP DATABASE IF EXISTS kutniti_clean")
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
-        print(f"✔ Base créée ou déjà existante : {db_name}")
+        print(f"Target database dropped and recreated: {db_name}")
     except mysql.connector.Error as err:
-        print(f"Erreur création base : {err}")
+        print(f"Database creation error: {err}")
     finally:
         cursor.close()
         conn.close()
 
 
 def get_target_connection():
-    """Connexion à la base cible (assume qu'elle existe déjà)."""
+    """Establish connection to the target database (assumes it already exists)."""
     return mysql.connector.connect(**TARGET_DB_CONFIG)

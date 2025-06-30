@@ -1,5 +1,5 @@
 def create_views(cursor):
-    # Vue 1 — Articles enrichis avec noms lisibles
+    # View 1 — Enriched articles with readable names
     cursor.execute("""
     CREATE OR REPLACE VIEW articles_full AS
     SELECT
@@ -22,7 +22,7 @@ def create_views(cursor):
     LEFT JOIN countries c ON a.country_id = c.id;
     """)
 
-    # Vue 2 — Nombre d'articles par grade global
+    # View 2 — Number of articles per grade type
     cursor.execute("""
     CREATE OR REPLACE VIEW article_counts_by_grade AS
     SELECT
@@ -33,7 +33,7 @@ def create_views(cursor):
     GROUP BY gt.type;
     """)
 
-    # Vue 3 — Nombre d'articles par country (avec leur nom)
+    # View 3 — Number of articles per country
     cursor.execute("""
     CREATE OR REPLACE VIEW article_counts_by_country AS
     SELECT
@@ -45,7 +45,7 @@ def create_views(cursor):
     ORDER BY article_count DESC;
     """)
 
-    # Vue 4 — Nombre d'articles par newspaper (avec noms lisibles)
+    # View 4 — Number of articles per newspaper with readable names
     cursor.execute("""
     CREATE OR REPLACE VIEW article_counts_by_newspaper AS
     SELECT
@@ -59,7 +59,7 @@ def create_views(cursor):
     ORDER BY article_count DESC;
     """)
 
-    # Vue 5 — Tags par article (flattened)
+    # View 5 — Flattened tags per article
     cursor.execute("""
     CREATE OR REPLACE VIEW article_tags_flat AS
     SELECT
@@ -71,7 +71,7 @@ def create_views(cursor):
     JOIN tags t ON at.tag_id = t.id;
     """)
 
-    # Vue 6 — Liste des tags par article (agrégée)
+    # View 6 — Aggregated list of tags per article
     cursor.execute("""
     CREATE OR REPLACE VIEW article_tags_aggregated AS
     SELECT
@@ -84,7 +84,7 @@ def create_views(cursor):
     GROUP BY a.id, a.title;
     """)
 
-    # Vue 7 — Nombre d'articles par tag
+    # View 7 — Number of articles per tag
     cursor.execute("""
     CREATE OR REPLACE VIEW tag_counts AS
     SELECT
@@ -96,7 +96,7 @@ def create_views(cursor):
     ORDER BY article_count DESC;
     """)
 
-    # Vue 8 — Articles avec tous les tags et noms joints (agrégé)
+    # View 8 — Articles with tags (aggregated)
     cursor.execute("""
     CREATE OR REPLACE VIEW articles_with_tags AS
     SELECT
@@ -106,62 +106,44 @@ def create_views(cursor):
     LEFT JOIN article_tags_aggregated at ON af.id = at.article_id;
     """)
 
-    # Vue 9 - Custom
+    # View 9 — Summary of articles per grade by month and newspaper
     cursor.execute("""
     CREATE OR REPLACE VIEW article_grades_summary AS
     SELECT
-        -- Extract year and month
         CAST(DATE_FORMAT(a.pubDate, '%Y-%m') AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period,
-
-        -- Newspaper info
         n.id AS newspaper_id,
-
-        -- Count of article by grade type (neutral, positive, negative)
         SUM(CASE WHEN gt.type = 'neutral' THEN 1 ELSE 0 END) AS neutral,
         SUM(CASE WHEN gt.type = 'positive' THEN 1 ELSE 0 END) AS positive,
         SUM(CASE WHEN gt.type = 'negative' THEN 1 ELSE 0 END) AS negative,
-
-        -- Sum of the three
         SUM(CASE WHEN gt.type IN ('neutral', 'positive', 'negative') THEN 1 ELSE 0 END) AS `ALL`
-
     FROM articles a
     JOIN gradeTypes gt ON a.gradeType_id = gt.id
     JOIN newspapers n ON a.newspaper_id = n.id
-    
     WHERE a.pubDate IS NOT NULL
     AND gt.type IN ('neutral', 'positive', 'negative')
-
     GROUP BY year_month_period, n.id
 
     UNION ALL
 
-    -- ALL_TIME summary (no date restriction)
     SELECT
-        CAST('all_time' AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period
- ,
-
+        CAST('all_time' AS CHAR) COLLATE utf8mb4_general_ci AS year_month_period,
         n.id AS newspaper_id,
-
         SUM(CASE WHEN gt.type = 'neutral' THEN 1 ELSE 0 END) AS neutral,
         SUM(CASE WHEN gt.type = 'positive' THEN 1 ELSE 0 END) AS positive,
         SUM(CASE WHEN gt.type = 'negative' THEN 1 ELSE 0 END) AS negative,
-
         SUM(CASE WHEN gt.type IN ('neutral', 'positive', 'negative') THEN 1 ELSE 0 END) AS `ALL`
-
     FROM articles a
     JOIN gradeTypes gt ON a.gradeType_id = gt.id
     JOIN newspapers n ON a.newspaper_id = n.id
-
     WHERE a.pubDate IS NOT NULL
     AND gt.type IN ('neutral', 'positive', 'negative')
-
-    GROUP BY n.id
+    GROUP BY n.id;
     """)
 
-
+    # View 10 — Raw article data with readable labels (original version)
     cursor.execute("""
-        CREATE OR REPLACE VIEW article_original AS
-        SELECT
+    CREATE OR REPLACE VIEW article_original AS
+    SELECT
         a.id,
         a.title,
         a.link,
@@ -175,7 +157,7 @@ def create_views(cursor):
         a.image_link,
         a.moderator,
         a.gradeDate
-        FROM articles a
-        LEFT JOIN gradeTypes gt ON a.gradeType_id = gt.id
-        LEFT JOIN newspapers np ON a.newspaper_id = np.id
+    FROM articles a
+    LEFT JOIN gradeTypes gt ON a.gradeType_id = gt.id
+    LEFT JOIN newspapers np ON a.newspaper_id = np.id;
     """)
