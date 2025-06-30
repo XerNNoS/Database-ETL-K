@@ -87,7 +87,8 @@ def transform_article_record(
         grade_date = record.get("gradeDate")
 
         # Grade type
-        grade_type_name = (record.get("type") or "ungraded").strip().lower()
+        grade_type_name = record.get("type", "ungraded").lower()
+        print(grade_type_name)
         grade_type_id = grade_type_table.get(grade_type_name)
 
         # Newspaper
@@ -126,7 +127,7 @@ def transform_article_record(
         # Future gradeDate handling
         moderator = record.get("moderator")
         if grade_date and isinstance(grade_date, datetime) and grade_date.date() > datetime(2024, 6, 30).date():
-            grade_type_id = grade_type_table.get("Ungraded")
+            grade_type_id = grade_type_table.get("ungraded")
             moderator = None
             tags = []
             grade_date = None
